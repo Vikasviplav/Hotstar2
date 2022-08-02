@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotstar 2</title>
+    <style>
+        #searchbox{
+            width:300px;
+            padding: 10px 0px;
+        }
+        #container{
+            width:305px;
+            height:250px;
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+
+<body>
+    <input id="searchbox" type="text" placeholder="Enter the movie" oninput="debounce(myfun,1000)" />
+    <div id="container">
+
+    </div>
+
+</body>
+
+</html>
+<script>
+    let API_KEY = "12a9b708"
+    let container = document.getElementById("container")
+
+    let myfun = async () => {
+        try {
+            let title = document.querySelector("#searchbox").value
+            let url = `http://www.omdbapi.com/?apikey=${API_KEY}&s=${title}`
+            let res = await fetch(url)
+            let data = await res.json()
+            //console.log(data)
+            if (data.Response == "False") {
+                return false
+            } else {
+
+                displayData(data.Search)
+            }
+
+
+        } catch (error) {
+            console.log(error)
+
+        }
+
+    }
+
+
+    let displayData = (movieList) => {
+        console.log(movieList)
+        container.innerHTML = ""
+        movieList.forEach(movie => {
+            let p = document.createElement("div")
+            p.textContent = movie.Title
+            p.style.cursor = "pointer"
+            container.append(p)
+
+            p.addEventListener("click", function () {
+                let movieData = movie;
+                localStorage.setItem("movieData", JSON.stringify(movie))
+                window.open("./individualMovie.html", '_blank').focus();
+            })
+        });
+    }
+    let timerId;
+
+    let debounce = (fun, delay) => {
+        if (timerId) {
+            clearInterval(timerId)
+        }
+         timerId = setTimeout(function fun() {
+            myfun()
+        }, delay)
+    }
+</script>
